@@ -12,7 +12,7 @@
 - [Korean driving licence](./driver-license/): 35×45 mm
 - [Half-business portrait](./half-business/): 30×40 mm (convention, not official)
 - [Résumé photo](./resume/): 30×40 mm (convention, not official)
-- [US passport / visa](./us-passport/): 50.8×50.8 mm
+- [US passport](./us-passport/): 50.8×50.8 mm
 - [Japanese passport](./japan-passport/): 35×45 mm
 - [Chinese visa](./china-visa/): 33×48 mm
 - [Schengen visa](./schengen-visa/): 35×45 mm
@@ -23,3 +23,55 @@
 - [Terms](./en/terms/)
 - [About](./en/about/)
 - [Contact](./en/contact/): ert93333@gmail.com
+
+## Verified requirements and editing policy (2026-11-04)
+Official submission presets (Korean passport, ID card, driving licence, US passport, Chinese visa) default to background replacement OFF, retouch 0, lighting off. Shoot against a real white wall; use crop/size/print only. Background replacement, retouch and lighting match are for résumés, portraits and general use. No acceptance guarantee.
+
+### kr-passport
+Head: crown (top of skull, excluding hair) to chin 32–36mm. Taken within 6 months; uniform white background. Online: recommended 413×531px (accepted width 395–431px × height 507–550px), JPG up to 500KB, 300 dpi.
+머리: 머리카락을 제외한 정수리(두개골 꼭대기)~턱 32–36mm. 6개월 이내 촬영, 균일한 흰 배경. 온라인: 413×531px 권장 (허용 가로 395–431px × 세로 507–550px), JPG 500KB 이하, 300dpi.
+Official source: https://www.passport.go.kr/home/kor/contents.do?menuPos=32
+
+### id-card
+Hatless upper-body photo taken within 6 months. White background recommended; a light single colour is acceptable. No official head length in mm is stated. Retouched/image photos cannot be used (Resident Registration Act Enforcement Rule, Article 9).
+6개월 이내 촬영한 모자 없는 상반신 사진. 흰 배경 권장, 밝은 단색도 가능. 공식 머리 길이 mm 규정은 제시되어 있지 않습니다. 보정·이미지 사진 사용 불가 (주민등록법 시행규칙 제9조).
+Official source: https://www.mois.go.kr/frt/sub/a06/b06/IDCard_5/screen.do
+
+### driver-license
+Hatless passport-style colour photo with no background, taken within 6 months. Head 32–36mm applies passport guidance as a recommendation; it is not explicitly stated by this licensing guide.
+6개월 이내 촬영한 모자 없는 무배경 여권용 컬러사진. 머리 32–36mm는 여권 규격 준용(권장)이며 해당 안내의 명시 규정이 아닙니다.
+Official source: https://www.safedriving.or.kr/guide/larGuide10.do?menuCode=MN-PO-12111
+
+### us-passport
+2×2 inches (50.8×50.8mm); chin to top of head 1 to 1⅜ inches (25.4–34.925mm). White or off-white background. No filters, edits, retouching, background replacement or AI.
+2×2인치 (50.8×50.8mm), 턱~머리 꼭대기 1~1⅜인치 (25.4–34.925mm). 흰색 또는 미색 배경. 필터·편집·보정·배경 교체·AI 사용 금지.
+Official source: https://travel.state.gov/en/passports/apply/help/photos.html
+
+### japan-passport
+Borderless 35×45mm; crown to chin 34±2mm. Top margin 2–6mm (automatic target 4mm); side margins at least 2mm each. Plain background; white recommended.
+테두리 없는 35×45mm. 정수리~턱 34±2mm. 위 여백 2–6mm (자동 구도 목표 4mm), 좌우 여백 각각 2mm 이상. 단색 배경, 흰색 권장.
+Official source: https://www.mofa.go.jp/mofaj/toko/passport/pass_2.html
+
+### china-visa
+Head width 15–22mm; head height 28–33mm. Crown 3–5mm from top (automatic target 4mm); at least 7mm below chin. White or near-white background. No modification or compositing.
+머리 폭 15–22mm, 머리 높이 28–33mm. 정수리 위 여백 3–5mm (자동 구도 목표 4mm), 턱 아래 7mm 이상. 흰색 또는 거의 흰색 배경. 수정·합성 금지.
+Official source: https://ch.china-embassy.gov.cn/fra/ls_fw_s_2/sbqz/201612/t20161207_3422419.htm
+
+### schengen-visa
+35×45mm; head 32–36mm (ICAO guidance); light plain background. Details vary by country. Check the embassy handling your application.
+35×45mm, 머리 32–36mm (ICAO 기준 안내), 밝은 단색 배경. 국가별 세부 요건이 다르므로 신청 대사관의 규정을 확인하세요.
+Official source: https://www.france-visas.gouv.fr/documents/d/france-visas/iso_iec_fv_visa_photograph_requirements_en
+
+### half-business
+30×40mm is a convention. Background replacement, skin retouch and lighting match are for portraits, résumés and general use.
+30×40mm는 관례 규격입니다. 배경 정리·피부 보정·조명 맞추기는 반명함·이력서·일반 용도 기능입니다.
+Official source: ./half-business/
+
+### resume
+30×40mm is a convention; check the employer’s requirements. Background replacement, skin retouch and lighting match are for résumés, portraits and general use.
+30×40mm는 관례이며 채용기관의 요구를 확인하세요. 배경 정리·피부 보정·조명 맞추기는 이력서·반명함·일반 용도 기능입니다.
+Official source: ./resume/
+
+Korean passport online source: https://www.passport.go.kr/home/kor/contents.do?menuPos=12
+한국 여권: AI 편집·가공·합성 및 배경 제거·흰 배경 합성 불가. 과도한 보정 지양.
+Korean passport: AI editing/compositing and background removal/replacement not accepted; excessive retouching discouraged.

@@ -1,12 +1,13 @@
 // Face detection boxes exclude the crown and hair. Keep the full estimated
-// crown-to-chin span in source coordinates, including when it exceeds the image.
+// crown-to-chin span in source coordinates, including when it exceeds the image. The crown is the skull top, excluding hair;
+// face-box inference cannot measure it and requires manual verification.
 export function headFraming(face, spec, outputHeight, sourceHeight) {
   const crown = face.originY - .5 * face.height;
   const chin = face.originY + 1.05 * face.height;
   const headMm = spec.head ? (spec.head[0] + spec.head[1]) / 2 : spec.h * .7;
   const pxPerMm = outputHeight / spec.h;
   const scale = headMm * pxPerMm / (chin - crown);
-  let crownY = 4 * pxPerMm;
+  let crownY = (spec.crownOffset ?? 4) * pxPerMm;
 
   if (spec.id === 'us-passport') {
     // MediaPipe's first two keypoints are the eyes, normalized to the source.
