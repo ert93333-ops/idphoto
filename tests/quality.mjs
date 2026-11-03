@@ -55,3 +55,24 @@ test('restricted presets disclose policy in both languages and Korean upload lim
  assert.equal(specs.find(s=>s.id==='driver-license').headRecommended,true);
  for(const id of ['china-visa','japan-passport'])assert.equal(specs.find(s=>s.id===id).crownOffset,4);
 });
+test('uncertain textured background is removed across the whole non-square source',()=>{
+ const w=80,h=40,data=new Uint8ClampedArray(w*h*4),skin=new Uint8ClampedArray(data.length);
+ for(let n=0;n<w*h;n++)data.set([n%2?180:40,70,30,255],n*4);
+ const mask={w:4,h:2,alpha:new Float32Array([.3,.3,.9,.9,.3,.3,.9,.9])};
+ const alpha=refineAlpha(data,w,h,mask,.5),out=composite(data,w,h,alpha,skin);
+ for(let y=0;y<h;y++){
+  assert.equal(alpha[y*w],0);assert.equal(alpha[y*w+w-1],1);
+  assert.deepEqual([...out.slice(y*w*4,y*w*4+3)],[255,255,255]);
+ }
+});
+test('refinement cannot restore background outside four output pixels of the contour',()=>{
+ const w=64,h=8,data=new Uint8ClampedArray(w*h*4);
+ // Matching luminance far into the background used to pull in foreground.
+ data.fill(80);
+ const mask={w:4,h:1,alpha:new Float32Array([.2,.2,.8,.8])};
+ const alpha=refineAlpha(data,w,h,mask,2);
+ for(let y=0;y<h;y++)for(let x=0;x<24;x++)assert.equal(alpha[y*w+x],0);
+ const low=refineAlpha(data,w,h,{w:1,h:1,alpha:new Float32Array([.35])});
+ const high=refineAlpha(data,w,h,{w:1,h:1,alpha:new Float32Array([.65])});
+ assert.ok(low.every(v=>v<1e-10));assert.ok(high.every(v=>v>.999999));
+});

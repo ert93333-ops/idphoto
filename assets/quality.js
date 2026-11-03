@@ -1,22 +1,52 @@
 const clamp = (v,lo=0,hi=255) => Math.max(lo,Math.min(hi,v));
 const lum = (d,i) => .2126*d[i]+.7152*d[i+1]+.0722*d[i+2];
-// Joint bilateral upsampling: spatial and luminance weights preserve fine edges
-// instead of spreading low-resolution alpha across contrasting hair/background.
-export function refineAlpha(data,w,h,mask) {
+// Background is class 0. Threshold foreground confidence after resampling it
+// from the whole mask to source coordinates, before any crop or framing.
+const foregroundAlpha = value => {
+ const t=clamp((value-.35)/.30,0,1);
+ return t*t*(3-2*t);
+};
+export function refineAlpha(data,w,h,mask,outputScale=1) {
  const a=new Float32Array(w*h),mw=mask.w,mh=mask.h;
+ const sample=(x,y)=>mask.alpha[clamp(y,0,mh-1)*mw+clamp(x,0,mw-1)];
  const guide=new Float32Array(mw*mh);
  for(let y=0;y<mh;y++)for(let x=0;x<mw;x++){
   const sx=Math.min(w-1,Math.floor((x+.5)*w/mw)),sy=Math.min(h-1,Math.floor((y+.5)*h/mh));
   guide[y*mw+x]=lum(data,(sy*w+sx)*4);
  }
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+  const mx=(x+.5)*mw/w-.5,my=(y+.5)*mh/h-.5;
+  const ix=Math.floor(mx),iy=Math.floor(my),tx=mx-ix,ty=my-iy;
+  a[y*w+x]=foregroundAlpha((sample(ix,iy)*(1-tx)+sample(ix+1,iy)*tx)*(1-ty)+(sample(ix,iy+1)*(1-tx)+sample(ix+1,iy+1)*tx)*ty);
+ }
+ // Find the contour in source coordinates. Refinement may only change pixels
+ // within four output pixels of it, regardless of zoom or preset size.
+ const distance=new Float32Array(w*h);distance.fill(Infinity);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+  const n=y*w+x,inside=a[n]>=.5;
+  if((x&&inside!==(a[n-1]>=.5))||(y&&inside!==(a[n-w]>=.5))){
+   distance[n]=0;if(x&&inside!==(a[n-1]>=.5))distance[n-1]=0;if(y&&inside!==(a[n-w]>=.5))distance[n-w]=0;
+  }
+ }
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+  const n=y*w+x;
+  if(x)distance[n]=Math.min(distance[n],distance[n-1]+1);
+  if(y)distance[n]=Math.min(distance[n],distance[n-w]+1);
+ }
+ for(let y=h-1;y>=0;y--)for(let x=w-1;x>=0;x--){
+  const n=y*w+x;
+  if(x+1<w)distance[n]=Math.min(distance[n],distance[n+1]+1);
+  if(y+1<h)distance[n]=Math.min(distance[n],distance[n+w]+1);
+ }
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+  if(distance[y*w+x]*outputScale>4)continue;
   const mx=(x+.5)*mw/w-.5,my=(y+.5)*mh/h-.5,L=lum(data,(y*w+x)*4);let sum=0,weight=0;
   for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){
    const xx=clamp(Math.round(mx)+dx,0,mw-1),yy=clamp(Math.round(my)+dy,0,mh-1),j=yy*mw+xx;
    const dl=L-guide[j],ds=(xx-mx)**2+(yy-my)**2;
    const wt=Math.exp(-ds/2-dl*dl/800);sum+=mask.alpha[j]*wt;weight+=wt;
   }
-  const value=weight?sum/weight:0;a[y*w+x]=value<.04?0:clamp(value,0,1);
+  if(weight)a[y*w+x]=foregroundAlpha(sum/weight);
  }
  return a;
 }

@@ -2,7 +2,7 @@ import {specs,outputSize,editingWarning} from './specs.js';
 import {headFraming} from './framing.js';
 import {refineAlpha,composite,backgroundStats} from './quality.js';
 window.__idphoto={lastStats:null};
-let refined=null,skinPixels=null;
+let refined=null,refinedScale=null,skinPixels=null;
 const en=document.documentElement.lang==='en';
 const t=(ko,eng)=>en?eng:ko;
 const $=id=>document.getElementById(id);
@@ -26,9 +26,9 @@ for(const id of [...controls,'background','removeBg','lighting'])$(id).addEventL
 $('removeBg').addEventListener('change',()=>{if(spec().restricted)$('lighting').checked=$('removeBg').checked;schedule();});
 $('spec').addEventListener('change',defaults);$('reset').addEventListener('click',defaults);
 function maskCanvas(values){const c=document.createElement('canvas');c.width=mask.w;c.height=mask.h;const x=c.getContext('2d',{willReadFrequently:true}),d=x.createImageData(c.width,c.height);for(let i=0;i<values.length;i++){d.data[i*4]=d.data[i*4+1]=d.data[i*4+2]=255;d.data[i*4+3]=Math.round(values[i]*255);}x.putImageData(d,0,0);const full=document.createElement('canvas');full.width=source.width;full.height=source.height;const fx=full.getContext('2d',{willReadFrequently:true});fx.filter='blur(1.2px)';fx.drawImage(c,0,0,full.width,full.height);return fx.getImageData(0,0,full.width,full.height).data;}
-function processed(){
+function processed(scale){
  const w=source.width,h=source.height,data=source.getContext('2d',{willReadFrequently:true}).getImageData(0,0,w,h).data;
- if(!refined)refined=refineAlpha(data,w,h,mask);
+ if(!refined||refinedScale!==scale){refined=refineAlpha(data,w,h,mask,scale);refinedScale=scale;}
  if(!skinPixels)skinPixels=maskCanvas(mask.skin);
  const remove=$('removeBg').checked,lighting=$('lighting').checked&&!(spec().restricted&&!remove);
  const bg=$('background').value.match(/\w\w/g).map(x=>parseInt(x,16));
@@ -40,7 +40,7 @@ function processed(){
  const result=composite(data,w,h,alpha,skinPixels,{background:bg,lighting,brightness,contrast,retouch:+$('retouch').value/100});
  ox.putImageData(new ImageData(result,w,h),0,0);return out;
 }
-function render(){if(!image||!mask)return;const s=spec();[preview.width,preview.height]=outputSize(s);ctx.fillStyle=$('background').value;ctx.fillRect(0,0,preview.width,preview.height);let scale,cx,cy;if(face){({scale,cx,cy}=headFraming(face,s,preview.height,source.height));}else{scale=Math.max(preview.width/source.width,preview.height/source.height);cx=source.width/2;cy=source.height/2;}scale*=+$('zoom').value/100;const dx=preview.width/2-cx*scale+(+$('offsetX').value/100)*preview.width;const dy=preview.height/2-cy*scale+(+$('offsetY').value/100)*preview.height;ctx.drawImage(processed(),dx,dy,source.width*scale,source.height*scale);
+function render(){if(!image||!mask)return;const s=spec();[preview.width,preview.height]=outputSize(s);ctx.fillStyle=$('background').value;ctx.fillRect(0,0,preview.width,preview.height);let scale,cx,cy;if(face){({scale,cx,cy}=headFraming(face,s,preview.height,source.height));}else{scale=Math.max(preview.width/source.width,preview.height/source.height);cx=source.width/2;cy=source.height/2;}scale*=+$('zoom').value/100;const dx=preview.width/2-cx*scale+(+$('offsetX').value/100)*preview.width;const dy=preview.height/2-cy*scale+(+$('offsetY').value/100)*preview.height;ctx.drawImage(processed(scale),dx,dy,source.width*scale,source.height*scale);
  const ac=document.createElement('canvas');ac.width=source.width;ac.height=source.height;
  const ax=ac.getContext('2d'),ad=ax.createImageData(ac.width,ac.height);
  for(let n=0;n<refined.length;n++){ad.data[n*4]=ad.data[n*4+1]=ad.data[n*4+2]=Math.round(refined[n]*255);ad.data[n*4+3]=255;}
@@ -49,7 +49,9 @@ function render(){if(!image||!mask)return;const s=spec();[preview.width,preview.
  const ox=oc.getContext('2d');ox.drawImage(ac,dx,dy,source.width*scale,source.height*scale);
  const od=ox.getImageData(0,0,oc.width,oc.height).data,alpha=new Float32Array(oc.width*oc.height);
  for(let n=0;n<alpha.length;n++)alpha[n]=od[n*4]/255;
- window.__idphoto.lastStats={...backgroundStats(ctx.getImageData(0,0,preview.width,preview.height).data,preview.width,preview.height,alpha,$('removeBg').checked),background:$('background').value,width:preview.width,height:preview.height};
+ let maskSum=0,foregroundCount=0;
+ for(const value of alpha){maskSum+=value;if(value>=.5)foregroundCount++;}
+ window.__idphoto.lastStats={maskMean:maskSum/alpha.length,fgFraction:foregroundCount/alpha.length,...backgroundStats(ctx.getImageData(0,0,preview.width,preview.height).data,preview.width,preview.height,alpha,$('removeBg').checked),background:$('background').value,width:preview.width,height:preview.height};
 }
 // Add an explicit JFIF density marker (300 pixels/inch) without retaining photo metadata.
 export function withDpi(bytes){
