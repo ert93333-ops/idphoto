@@ -1,0 +1,25 @@
+# ID PHOTO by VSHOP
+
+> Free Korean-first ID photo editor. Photos are processed locally in the browser and never uploaded. English pages are under /en/. No acceptance guarantee.
+
+## Tool
+- [Korean tool](./): photo framing, segmentation, light skin retouch, 300 dpi JPEG and 4×6 inch print sheets.
+- [English tool](./en/)
+
+## Guides
+- [Korean passport](./kr-passport/): 35×45 mm
+- [Korean ID card](./id-card/): 35×45 mm
+- [Korean driving licence](./driver-license/): 35×45 mm
+- [Half-business portrait](./half-business/): 30×40 mm (convention, not official)
+- [Résumé photo](./resume/): 30×40 mm (convention, not official)
+- [US passport / visa](./us-passport/): 50.8×50.8 mm
+- [Japanese passport](./japan-passport/): 35×45 mm
+- [Chinese visa](./china-visa/): 33×48 mm
+- [Schengen visa](./schengen-visa/): 35×45 mm
+
+## Policies
+- [FAQ](./en/faq/)
+- [Privacy](./en/privacy/)
+- [Terms](./en/terms/)
+- [About](./en/about/)
+- [Contact](./en/contact/): ert93333@gmail.com
